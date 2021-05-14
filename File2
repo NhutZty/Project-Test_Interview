@@ -1,0 +1,31 @@
+public class Equatable
+{
+    public string field1;
+
+    public override bool Equals(object obj)
+    {
+        if (ReferenceEquals(null, obj)) return false;
+        if (ReferenceEquals(this, obj)) return true;
+
+        var type = obj.GetType();
+        if (GetType() != type)
+            return false;
+
+        var fields = type.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+        foreach (var field in fields)
+            if (field.GetValue(this) != field.GetValue(obj))
+                return false;
+
+        return true;
+    }
+
+    public override int GetHashCode()
+    {
+        var accumulator = 0;
+        var fields = GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+        foreach (var field in fields)
+            accumulator = unchecked ((accumulator * 937) ^ field.GetValue(this).GetHashCode());
+
+        return accumulator;
+    }
+}
