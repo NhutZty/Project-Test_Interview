@@ -1,0 +1,17 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace ConsoleApp1
+{
+    public class Audit_Deal
+    {
+        public string ID { get; set; }
+        public string Field { get; set; }
+        public string Old_val { get; set; }
+        public string New_val { get; set; }
+        public string Last_update_dt { get; set; }
+        public string Last_update_user { get; set; }
+
+    }
+}
