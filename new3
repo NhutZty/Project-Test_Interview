@@ -1,0 +1,91 @@
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
+using System.Reflection;
+using Newtonsoft.Json;
+
+namespace ConsoleApp1
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            string jsonFrom = File.ReadAllText(@"C:\Users\84355\source\repos\ConsoleApp1\ConsoleApp1\jsonFrom-Case1.json");
+            string jsonTo = File.ReadAllText(@"C:\Users\84355\source\repos\ConsoleApp1\ConsoleApp1\jsonTo-Case1.json");
+            List<Audit_Deal> audit_Deals = CompareJson<DummyObject>(jsonFrom, jsonTo);
+            Console.WriteLine("Hello World!");
+        }
+        public static List<Audit_Deal> CompareJson<T>(string jsonFrom, string jsonTo) where T : class
+        {
+            T objFrom = null;
+            T objTo = null;
+            List<Audit_Deal> storage = new List<Audit_Deal>();
+
+            // Get object
+            if (!string.IsNullOrEmpty("jsonFrom"))
+            {
+                objFrom = JsonConvert.DeserializeObject<T>(jsonFrom);
+            }
+
+            if (!string.IsNullOrEmpty("jsonFrom"))
+            {
+                objTo = JsonConvert.DeserializeObject<T>(jsonFrom);
+            }
+
+            var type = objTo.GetType();
+            var propertyInfos = type.GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+
+            // Case delete
+            if (objTo == null)
+            {
+                string id_deal = type.GetProperty("Id_deal").GetValue(objFrom).ToString();
+                string create_user = type.GetProperty("create_user").GetValue(objFrom).ToString();
+                foreach (var property in propertyInfos)
+                {
+                    Audit_Deal temp = new Audit_Deal();
+                    temp.ID = id_deal;
+                    temp.Field = property.Name;
+                    temp.New_val = null;
+                    temp.Old_val = property.GetValue(objFrom).ToString();
+                    temp.Last_update_dt = "DELETE";
+                    temp.Last_update_user = create_user;
+                }
+
+                return storage;
+            }
+
+            // case insert and Update
+            foreach (var property in propertyInfos)
+            {
+
+                var staff = type.GetProperty("staff");
+                // Insert
+                if (objFrom == null)
+                {
+                    string id_deal = type.GetProperty("Id_deal").GetValue(objFrom).ToString();
+                    string create_user = type.GetProperty("create_user").GetValue(objFrom).ToString();
+                    foreach (var property in propertyInfos)
+                    {
+                        Audit_Deal temp = new Audit_Deal();
+                        temp.ID = id_deal;
+                        temp.Field = property.Name;
+                        temp.New_val = null;
+                        temp.Old_val = property.GetValue(objFrom).ToString();
+                        temp.Last_update_dt = "DELETE";
+                        temp.Last_update_user = create_user;
+                    }
+                }
+                else
+                {
+                    if (property.GetValue(objTo) != property.GetValue(objFrom))
+                    {
+
+                    }
+                }
+            }
+
+            return storage;
+        }
+    }
+}
